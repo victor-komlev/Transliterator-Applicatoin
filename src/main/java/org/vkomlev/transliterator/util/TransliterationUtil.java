@@ -10,22 +10,23 @@ public class TransliterationUtil {
 
     if (transliterationRule.getDoubleLetters() != null) {
       transliterationRule.getDoubleLetters().forEach((original, transliterated) -> {
-        replaceAll(stringBuffer, original, transliterated);
+        replaceAll(stringBuffer, original, transliterated, 0);
       });
     }
 
     if (transliterationRule.getSingleLetters() != null) {
       transliterationRule.getSingleLetters().forEach((original, transliterated) -> {
-        replaceAll(stringBuffer, original, transliterated);
+        replaceAll(stringBuffer, original, transliterated, 0);
       });
     }
 
     return stringBuffer.toString();
   }
 
-  private static void replaceAll(StringBuffer text, String source, String target) {
+  private static void replaceAll(StringBuffer text, String source, String target,
+      int currentPosition) {
     String[] targetOptions = target.split(",");
-    int indexOfPattern = StringUtils.indexOfIgnoreCase(text, source);
+    int indexOfPattern = StringUtils.indexOfIgnoreCase(text, source, currentPosition);
     String targetString;
     if (indexOfPattern == 0) {
       targetString = targetOptions.length > 1 ? targetOptions[1] : targetOptions[0];
@@ -35,7 +36,8 @@ public class TransliterationUtil {
       return;
     }
     text.replace(indexOfPattern, indexOfPattern + source.length(), targetString);
-    replaceAll(text, source, target);
+    replaceAll(text, source, target,
+        StringUtils.lastIndexOf(text, targetString) + targetString.length());
   }
 }
 
